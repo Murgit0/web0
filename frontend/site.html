@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>site — web0</title>
+  <link rel="stylesheet" href="/css/base.css" />
+</head>
+<body>
+  <div id="site-wrap"></div>
+  <iframe id="sandbox" sandbox="allow-same-origin" style="display:none;width:0;height:0;border:0"></iframe>
+  <script type="module">
+    const slug = new URLSearchParams(location.search).get('slug');
+    const { API_BASE } = await import('/js/config.js');
+    const res = await fetch(`${API_BASE}/db/sites/${slug}`);
+    const data = await res.json();
+    if (!data.site) { document.body.innerHTML = '<p class="box">Site not found</p>'; throw 0; }
+    const s = data.site;
+    document.title = s.title;
+    const style = document.createElement('style');
+    style.textContent = s.css || '';
+    document.head.appendChild(style);
+    const wrap = document.getElementById('site-wrap');
+    wrap.innerHTML = s.html || '';
+    if (s.js) {
+      const iframe = document.getElementById('sandbox');
+      iframe.style.display = 'block';
+      iframe.style.width = '100%';
+      iframe.style.minHeight = '200px';
+      iframe.srcdoc = `<!DOCTYPE html><body>${s.html}<script>${s.js}<\/script></body>`;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>games — web0</title>
+  <link rel="stylesheet" href="/css/base.css" />
+</head>
+<body>
+  <div id="main-nav"></div>
+  <div class="box">
+    <h1>games</h1>
+    <p>Win ≥ threshold → +15 wheat</p>
+    <ul>
+      <li><a href="/games/snake.html">snake</a></li>
+      <li><a href="/games/minesweeper.html">minesweeper</a></li>
+      <li><a href="/games/pong.html">pong (wager)</a></li>
+      <li><a href="/games/ttt.html">tic-tac-toe (wager)</a></li>
+    </ul>
+  </div>
+  <script type="module">
+    import { injectNav } from '/js/nav.js';
+    injectNav();
+  </script>
+</body>
+</html>

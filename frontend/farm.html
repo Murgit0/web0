@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>farm — web0</title>
+  <link rel="stylesheet" href="/css/base.css" />
+</head>
+<body>
+  <div id="main-nav"></div>
+  <div class="box">
+    <h1>farming sim</h1>
+    <p id="bal"></p>
+    <h2>your plots (4)</h2>
+    <div id="plots"></div>
+    <h2>global farm (8)</h2>
+    <div id="global"></div>
+    <button class="btn" id="sell">sell 10 crops → wheat</button>
+    <p id="status"></p>
+  </div>
+  <script type="module">
+    import { injectNav } from '/js/nav.js';
+    import { requireAuthRedirect } from '/js/auth-ui.js';
+    import { api } from '/js/api.js';
+    injectNav();
+    if (!requireAuthRedirect()) throw 0;
+    async function load() {
+      const b = await api('/wheat/balance');
+      document.getElementById('bal').textContent = `🌾 ${b.wheat} · crops ${b.crops}`;
+      const f = await api('/farm/state');
+      const plots = document.getElementById('plots');
+      plots.innerHTML = '';
+      f.plots.forEach((p) => {
+        const d = document.createElement('div');
+        d.innerHTML = `Plot ${p.plot_index}: ${p.crop || 'empty'} 
+          <button data-i="${p.plot_index}" class="plant">plant</button>
+          <button data-i="${p.plot_index}" class="harv">harvest</button>`;
+        plots.appendChild(d);
+      });
+      plots.querySelectorAll('.plant').forEach((btn) => btn.onclick = async () => {
+        await api('/farm/plant', { method: 'POST', body: JSON.stringify({ plot_index: +btn.dataset.i, crop: 'wheat' }) });
+        load();
+      });
+      plots.querySelectorAll('.harv').forEach((btn) => btn.onclick = async () => {
+        try {
+          const r = await api('/farm/harvest', { method: 'POST', body: JSON.stringify({ plot_index: +btn.dataset.i }) });
+          document.getElementById('status').textContent = `+${r.wheat} wheat, +${r.crops} crops`;
+          load();
+        } catch (e) { document.getElementById('status').textContent = e.message; }
+      });
+      const g = document.getElementById('global');
+      g.innerHTML = '';
+      f.globalPlots.forEach((p) => {
+        const d = document.createElement('div');
+        d.innerHTML = `Global ${p.plot_index}: ${p.crop || 'empty'}
+          <button data-i="${p.plot_index}" class="gp">plant</button>
+          <button data-i="${p.plot_index}" class="gh">harvest</button>`;
+        g.appendChild(d);
+      });
+      g.querySelectorAll('.gp').forEach((btn) => btn.onclick = async () => {
+        await api('/farm/global/plant', { method: 'POST', body: JSON.stringify({ plot_index: +btn.dataset.i }) });
+        load();
+      });
+      g.querySelectorAll('.gh').forEach((btn) => btn.onclick = async () => {
+        try {
+          const r = await api('/farm/global/harvest', { method: 'POST', body: JSON.stringify({ plot_index: +btn.dataset.i }) });
+          document.getElementById('status').textContent = `Global: +${r.wheat} wheat, +${r.crops} crops`;
+          load();
+        } catch (e) { document.getElementById('status').textContent = e.message; }
+      });
+    }
+    load();
+    document.getElementById('sell').onclick = async () => {
+      try {
+        const r = await api('/farm/sell', { method: 'POST', body: JSON.stringify({ amount: 10 }) });
+        document.getElementById('status').textContent = `Sold: +${r.wheat_gained} wheat`;
+        load();
+      } catch (e) { document.getElementById('status').textContent = e.message; }
+    };
+  </script>
+</body>
+</html>

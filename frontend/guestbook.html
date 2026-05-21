@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>guestbook</title>
+  <link rel="stylesheet" href="/css/base.css" />
+</head>
+<body>
+  <div id="main-nav"></div>
+  <div class="box">
+    <h1>guestbook</h1>
+    <textarea id="msg"></textarea>
+    <button class="btn" id="sign">sign</button>
+    <ul id="entries"></ul>
+  </div>
+  <script type="module">
+    import { injectNav } from '/js/nav.js';
+    injectNav();
+    const KEY = 'web0_guestbook';
+    function load() {
+      const list = JSON.parse(localStorage.getItem(KEY) || '[]');
+      document.getElementById('entries').innerHTML = list.map((e) => `<li>${e.name}: ${e.text} <small>${e.at}</small></li>`).join('');
+    }
+    load();
+    document.getElementById('sign').onclick = () => {
+      const list = JSON.parse(localStorage.getItem(KEY) || '[]');
+      list.unshift({ name: 'anon', text: document.getElementById('msg').value, at: new Date().toISOString() });
+      localStorage.setItem(KEY, JSON.stringify(list.slice(0, 50)));
+      load();
+    };
+  </script>
+</body>
+</html>

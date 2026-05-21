@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>casino — web0</title>
+  <link rel="stylesheet" href="/css/base.css" />
+</head>
+<body>
+  <div id="main-nav"></div>
+  <div class="box">
+    <h1>wheat casino 🎰</h1>
+    <p id="bal"></p>
+    <label>bet <input id="bet" type="number" value="10" /></label>
+    <button class="btn" data-game="slots">slots</button>
+    <button class="btn" data-game="flip">coin flip</button>
+    <button class="btn" data-game="dice">dice</button>
+    <p id="status"></p>
+    <h2>heist a real user</h2>
+    <input id="target" placeholder="username" />
+    <button class="btn" id="heist">heist (25 wheat)</button>
+  </div>
+  <script type="module">
+    import { injectNav } from '/js/nav.js';
+    import { requireAuthRedirect } from '/js/auth-ui.js';
+    import { api } from '/js/api.js';
+    injectNav();
+    if (!requireAuthRedirect()) throw 0;
+    const b = await api('/wheat/balance');
+    document.getElementById('bal').textContent = `🌾 ${b.wheat}`;
+    document.querySelectorAll('[data-game]').forEach((btn) => btn.onclick = async () => {
+      try {
+        const r = await api('/casino/bet', { method: 'POST', body: JSON.stringify({ game: btn.dataset.game, bet: +document.getElementById('bet').value }) });
+        document.getElementById('status').textContent = `Payout ${r.payout}, net ${r.net}`;
+        document.getElementById('bal').textContent = `🌾 ${r.balance}`;
+      } catch (e) { document.getElementById('status').textContent = e.message; }
+    });
+    document.getElementById('heist').onclick = async () => {
+      try {
+        const r = await api('/heist', { method: 'POST', body: JSON.stringify({ target_username: document.getElementById('target').value }) });
+        document.getElementById('status').textContent = r.success ? `Stole ${r.amount}!` : 'Failed. Lost 25 wheat.';
+      } catch (e) { document.getElementById('status').textContent = e.message; }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>kitchen — web0</title>
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/kitchen.css" />
+</head>
+<body>
+  <div id="main-nav"></div>
+  <div class="box">
+    <h1>the mug</h1>
+    <div id="visitor-ticker">00000000</div>
+    <p>Shards: <span id="shard-count">0</span> · <span id="drought-msg" style="display:none;color:red">MUG DROUGHT</span></p>
+    <div class="kitchen-wrap pixel">
+      <img class="kitchen-bg" src="/assets/kitchen/kitchen-at-dusk.svg" alt="kitchen at dusk pixel art" width="640" height="360" />
+      <div id="mug-sprite" title="catch me"></div>
+    </div>
+    <button class="btn" id="clean-btn">clean kitchen 🧹</button>
+    <p id="status"></p>
+  </div>
+  <div id="catch-hud"><button id="catch-btn">CATCH!</button></div>
+  <script type="module">
+    import { injectNav } from '/js/nav.js';
+    import { initKitchen } from '/js/kitchen.js';
+    import { connectWs } from '/js/ws.js';
+    import '/js/easter.js';
+    injectNav();
+    connectWs();
+    initKitchen();
+  </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" shape-rendering="crispEdges">
+  <rect fill="#e8a060" width="640" height="360"/>
+  <rect fill="#5a4030" y="280" width="640" height="80"/>
+  <rect fill="#8b6914" x="80" y="200" width="480" height="24"/>
+  <rect fill="#6b4423" x="60" y="224" width="520" height="56"/>
+  <rect fill="#a8c8e8" x="40" y="40" width="80" height="120" opacity="0.9"/>
+  <rect fill="#334455" x="50" y="60" width="20" height="80"/>
+  <rect fill="#a8c8e8" x="420" y="50" width="120" height="100"/>
+  <rect fill="#445566" x="440" y="70" width="30" height="60"/>
+  <rect fill="#888" x="100" y="210" width="70" height="50"/>
+  <rect fill="#666" x="520" y="80" width="60" height="180"/>
+  <rect fill="#4a3020" x="200" y="248" width="60" height="32"/>
+  <text x="12" y="20" fill="#000" font-size="10" font-family="monospace">kitchen at dusk  replace with AC Illust #24090144 PNG</text>
+</svg>

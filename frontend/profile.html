@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>profile — web0</title>
+  <link rel="stylesheet" href="/css/base.css" />
+</head>
+<body>
+  <div id="main-nav"></div>
+  <div class="box" id="profile-box">
+    <h1 id="name">profile</h1>
+    <p id="bio"></p>
+    <p>🌾 <span id="wheat"></span> · mood <span id="mood"></span></p>
+    <audio id="song" controls></audio>
+    <h2>mugs caught</h2>
+    <ul id="mugs"></ul>
+    <h2>badges</h2>
+    <ul id="badges"></ul>
+    <h2>wall</h2>
+    <ul id="wall"></ul>
+    <textarea id="wallpost" placeholder="post on wall"></textarea>
+    <button class="btn" id="post">post</button>
+  </div>
+  <div class="box" id="edit-box" style="display:none">
+    <h2>edit your profile</h2>
+    <input id="song-url" placeholder="/assets/music/your.mp3" />
+    <button class="btn" id="save-prof">save</button>
+  </div>
+  <script type="module">
+    import { injectNav } from '/js/nav.js';
+    import { api, getUser } from '/js/api.js';
+    injectNav();
+    const u = new URLSearchParams(location.search).get('u') || getUser()?.username;
+    const data = await api(`/profiles/${u}`);
+    document.getElementById('name').textContent = data.user.display_name || data.user.username;
+    document.getElementById('bio').textContent = data.profile.bio;
+    document.getElementById('wheat').textContent = data.profile.wheat_balance;
+    document.getElementById('mood').textContent = data.profile.mood;
+    if (data.profile.profile_song_url) {
+      document.getElementById('song').src = data.profile.profile_song_url;
+    }
+    if (data.profile.background_css) {
+      document.body.style.cssText += data.profile.background_css;
+    }
+    data.mugs.forEach((m) => {
+      const li = document.createElement('li');
+      li.textContent = `#${m.drop_number} @ ${m.created_at}`;
+      document.getElementById('mugs').appendChild(li);
+    });
+    data.badges.forEach((b) => {
+      const li = document.createElement('li');
+      li.textContent = b.badge;
+      document.getElementById('badges').appendChild(li);
+    });
+    data.wall.forEach((w) => {
+      const li = document.createElement('li');
+      li.textContent = `${w.author}: ${w.body}`;
+      document.getElementById('wall').appendChild(li);
+    });
+    if (getUser()?.username === u) {
+      document.getElementById('edit-box').style.display = 'block';
+      document.getElementById('song-url').value = data.profile.profile_song_url || '';
+      document.getElementById('save-prof').onclick = async () => {
+        await api('/profiles/me', { method: 'PUT', body: JSON.stringify({ profile_song_url: document.getElementById('song-url').value }) });
+      };
+      document.getElementById('post').onclick = async () => {
+        await api(`/profiles/${u}/wall`, { method: 'POST', body: JSON.stringify({ body: document.getElementById('wallpost').value }) });
+        location.reload();
+      };
+    }
+  </script>
+</body>
+</html>

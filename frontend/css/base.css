@@ -1,0 +1,39 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: 'Courier New', Courier, monospace;
+  background: #c0c0c0 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><rect width="4" height="4" fill="%23a8a8a8"/><rect x="4" y="4" width="4" height="4" fill="%23a8a8a8"/></svg>');
+  color: #000;
+  line-height: 1.5;
+}
+a { color: #0000ee; }
+a:visited { color: #551a8b; }
+.box {
+  border: 3px solid #000;
+  background: #ffffcc;
+  padding: 12px;
+  margin: 12px auto;
+  max-width: 900px;
+  box-shadow: 4px 4px 0 #333;
+}
+nav.box a { margin-right: 12px; font-weight: bold; }
+h1, h2 { font-family: 'Comic Sans MS', 'Chalkboard SE', cursive; }
+.btn {
+  border: 2px outset #fff;
+  background: #ddd;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.btn:active { border-style: inset; }
+input, textarea, select {
+  border: 2px inset #fff;
+  padding: 6px;
+  font-family: inherit;
+  width: 100%;
+  max-width: 320px;
+}
+.blink { animation: blink 1s step-end infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.pixel { image-rendering: pixelated; image-rendering: crisp-edges; }
+#status { color: #660000; min-height: 1.2em; }

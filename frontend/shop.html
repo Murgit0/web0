@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>shop — web0</title>
+  <link rel="stylesheet" href="/css/base.css" />
+</head>
+<body>
+  <div id="main-nav"></div>
+  <div class="box">
+    <h1>shop (🌾)</h1>
+    <ul id="items"></ul>
+    <p id="status"></p>
+  </div>
+  <script type="module">
+    import { injectNav } from '/js/nav.js';
+    import { requireAuthRedirect } from '/js/auth-ui.js';
+    import { api } from '/js/api.js';
+    injectNav();
+    if (!requireAuthRedirect()) throw 0;
+    const { items } = await api('/shop');
+    const ul = document.getElementById('items');
+    items.forEach((it) => {
+      const li = document.createElement('li');
+      if (it.sold_out) li.textContent = `${it.name} — SOLD OUT`;
+      else {
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.textContent = `buy ${it.name} (${it.cost} wheat)`;
+        btn.onclick = async () => {
+          try {
+            const r = await api('/shop/buy', { method: 'POST', body: JSON.stringify({ item_id: it.id }) });
+            document.getElementById('status').textContent = r.message || 'no';
+          } catch (e) { document.getElementById('status').textContent = e.message; }
+        };
+        li.appendChild(btn);
+      }
+      ul.appendChild(li);
+    });
+  </script>
+</body>
+</html>

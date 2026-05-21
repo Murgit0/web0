@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>web0</title>
+  <script>
+    const p = new URLSearchParams(location.search).get('p') || location.pathname;
+    sessionStorage.setItem('web0_redirect', p);
+    location.replace('/' + (p.startsWith('/') ? p.slice(1) : p));
+  </script>
+</head>
+<body>Redirecting…</body>
+</html>

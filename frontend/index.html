@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>web0 — home</title>
+  <link rel="stylesheet" href="/css/base.css" />
+</head>
+<body>
+  <div id="main-nav"></div>
+  <div class="box">
+    <h1>welcome to web0</h1>
+    <p>No engagement metrics were harmed in the making of this internet. 🌾</p>
+    <p id="status"></p>
+    <button class="btn" id="random-site">random site</button>
+    <button class="btn" id="fortune">fortune cookie</button>
+  </div>
+  <div class="box">
+    <h2>latest sites</h2>
+    <ul id="latest-sites"></ul>
+  </div>
+  <div class="box">
+    <h2>richest wheat barons</h2>
+    <ol id="richest"></ol>
+    <p>Gini: <span id="gini">—</span></p>
+  </div>
+  <script type="module">
+    import { injectNav } from '/js/nav.js';
+    import { api } from '/js/api.js';
+    import '/js/easter.js';
+    injectNav();
+    const sites = await api('/sites?public=1').catch(() => ({ sites: [] }));
+    const ul = document.getElementById('latest-sites');
+    sites.sites?.forEach((s) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<a href="/site.html?slug=${s.slug}">${s.title}</a>`;
+      ul.appendChild(li);
+    });
+    const lb = await api('/leaderboard').catch(() => ({ leaderboard: [], gini: 0 }));
+    document.getElementById('gini').textContent = lb.gini ?? '—';
+    lb.leaderboard?.slice(0, 5).forEach((r) => {
+      const li = document.createElement('li');
+      li.textContent = `${r.username}: ${r.wheat_balance} 🌾`;
+      document.getElementById('richest').appendChild(li);
+    });
+    document.getElementById('random-site').onclick = () => {
+      const list = sites.sites || [];
+      if (list.length) location.href = `/site.html?slug=${list[Math.floor(Math.random() * list.length)].slug}`;
+    };
+    document.getElementById('fortune').onclick = () => {
+      const f = ['The mug knows.', 'Plant wheat.', 'Your heist will fail beautifully.', 'Tuesday is a concept.'];
+      document.getElementById('status').textContent = f[Math.floor(Math.random() * f.length)];
+    };
+  </script>
+</body>
+</html>
