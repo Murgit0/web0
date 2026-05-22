@@ -7,8 +7,11 @@
 
 ## 2. Worker `web0-backend`
 
-1. Upload `/cloudflare` modules (ES modules, `index.js` entry).
-2. **Bindings:**
+All Worker scripts are in **`/cloudflare`**. See [cloudflare/README.md](../cloudflare/README.md).
+
+**Quick:** paste `cloudflare/worker.upload.js` (or upload all `.js` files with `index.js` as entry).
+
+1. **Bindings:**
    - `D1` → database `web0` (variable name must be `D1`)
 3. Optional var: `ADMIN_SECRET` for `POST /db/mug/spawn` (manual mug drops).
 

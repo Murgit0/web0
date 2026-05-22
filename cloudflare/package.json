@@ -1,0 +1,11 @@
+{
+  "name": "web0-cloudflare-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bundle": "esbuild index.js --bundle --outfile=worker.upload.js --format=esm --platform=neutral --target=es2022"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}

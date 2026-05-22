@@ -16,7 +16,7 @@ Chaotic retro miniweb: **GitHub Pages** frontend, **Cloudflare Worker + D1** bac
 
 ```
 frontend/     GitHub Pages (vanilla HTML/CSS/JS)
-cloudflare/   Worker source (.js, env.D1)
+cloudflare/   Worker scripts to deploy (see cloudflare/README.md); optional bundle: worker.upload.js
 infra/        schema.sql, DEPLOY.md
 ```
 
