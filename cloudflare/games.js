@@ -1,6 +1,7 @@
 import { json } from './cors.js';
 import { withDb, uuid } from './db.js';
 import { requireUser } from './auth.js';
+import { pushEvent } from './poll.js';
 
 const GAME_REWARD = 15;
 const MIN_BET = 5;
@@ -62,6 +63,7 @@ export async function createMatch(request, env, user) {
       .prepare('INSERT INTO game_matches (id, game, player1_id, stake, status) VALUES (?, ?, ?, ?, ?)')
       .bind(id, game, user.id, stake, 'waiting')
       .run();
+    await pushEvent(db, `game:match:${id}`, { type: 'waiting', match_id: id, game });
     return json({ match_id: id });
   });
 }
@@ -80,7 +82,17 @@ export async function joinMatch(request, env, user, matchId) {
     await db.prepare('UPDATE profiles SET wheat_balance = wheat_balance - ? WHERE user_id = ?').bind(m.stake, user.id).run();
     const pot = m.stake * 2;
     const winnerCut = Math.floor(pot * 0.9);
+    const match = await db.prepare('SELECT * FROM game_matches WHERE id = ?').bind(matchId).first();
+    await pushEvent(db, `game:match:${matchId}`, { type: 'active', match });
     return json({ match_id: matchId, pot, winner_cut: winnerCut });
+  });
+}
+
+export async function getMatch(request, env, matchId) {
+  return withDb(env, async (db) => {
+    const m = await db.prepare('SELECT * FROM game_matches WHERE id = ?').bind(matchId).first();
+    if (!m) return json({ error: 'Not found' }, 404);
+    return json({ match: m });
   });
 }
 
@@ -97,6 +109,7 @@ export async function resolveMatch(request, env, user, matchId) {
     const payout = Math.floor(pot * 0.9);
     await db.prepare('UPDATE profiles SET wheat_balance = wheat_balance + ? WHERE user_id = ?').bind(payout, winnerId).run();
     await db.prepare('UPDATE game_matches SET status = ? WHERE id = ?').bind('done', matchId).run();
+    await pushEvent(db, `game:match:${matchId}`, { type: 'done', winner_id: winnerId, payout });
     return json({ payout });
   });
 }

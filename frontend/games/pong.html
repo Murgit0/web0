@@ -7,7 +7,7 @@
 </head>
 <body>
   <div class="box">
-    <p>Create match, share ID, opponent joins via Worker API. Realtime via WebSocket (basic).</p>
+    <p>Create match, share ID, opponent joins. Match state polls D1 every 2s.</p>
     <input id="stake" value="10" /> stake
     <button class="btn" id="create">create match</button>
     <input id="matchId" placeholder="match id" />
@@ -18,18 +18,26 @@
   <script type="module">
     import { api } from '/js/api.js';
     import { requireAuthRedirect } from '/js/auth-ui.js';
-    import { connectWs } from '/js/ws.js';
+    import { pollMatch } from '/js/poll.js';
     if (!requireAuthRedirect()) throw 0;
-    connectWs();
+    let stopPoll = null;
     document.getElementById('create').onclick = async () => {
       const r = await api('/games/match', { method: 'POST', body: JSON.stringify({ game: 'pong', stake: +document.getElementById('stake').value }) });
       document.getElementById('status').textContent = `Match: ${r.match_id}`;
       document.getElementById('matchId').value = r.match_id;
+      if (stopPoll) clearInterval(stopPoll);
+      stopPoll = pollMatch(r.match_id, (m) => {
+        document.getElementById('status').textContent = `Match ${m.id || r.match_id}: ${m.status}`;
+      });
     };
     document.getElementById('join').onclick = async () => {
       const id = document.getElementById('matchId').value;
       const r = await api(`/games/match/${id}/join`, { method: 'POST', body: '{}' });
       document.getElementById('status').textContent = `Joined. Pot ${r.pot}`;
+      if (stopPoll) clearInterval(stopPoll);
+      stopPoll = pollMatch(id, (m) => {
+        document.getElementById('status').textContent = `Match: ${m.status}`;
+      });
     };
   </script>
 </body>

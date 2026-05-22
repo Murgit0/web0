@@ -12,6 +12,7 @@ import * as easter from './easter.js';
 import { checkRateLimit } from './rateLimit.js';
 import { withDb } from './db.js';
 import { spawnMug } from './mug.js';
+import * as poll from './poll.js';
 
 export async function handleDb(request, env, ctx) {
   const url = new URL(request.url);
@@ -61,16 +62,6 @@ export async function handleDb(request, env, ctx) {
       if (env.ADMIN_SECRET && secret !== env.ADMIN_SECRET) return json({ error: 'Forbidden' }, 403);
       return withDb(env, async (db) => {
         const mugEvent = await spawnMug(db, false);
-        if (env.MUG_HUB) {
-          const id = env.MUG_HUB.idFromName('global');
-          await env.MUG_HUB.get(id).fetch(
-            new Request('http://do/broadcast', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ channel: 'mug:drop', payload: mugEvent }),
-            })
-          );
-        }
         return json({ mug: mugEvent });
       });
     }
@@ -83,7 +74,12 @@ export async function handleDb(request, env, ctx) {
     if (parts[0] === 'games' && parts[1] === 'leaderboard' && parts[2] && method === 'GET') {
       return games.gameLeaderboard(request, env, parts[2]);
     }
+    if (parts[0] === 'poll' && method === 'GET') return poll.pollEvents(request, env);
+
     if (parts[0] === 'games' && parts[1] === 'match' && method === 'POST') return games.createMatch(request, env, user);
+    if (parts[0] === 'games' && parts[1] === 'match' && parts[2] && parts.length === 3 && method === 'GET') {
+      return games.getMatch(request, env, parts[2]);
+    }
     if (parts[0] === 'games' && parts[1] === 'match' && parts[2] && parts[3] === 'join' && method === 'POST') {
       return games.joinMatch(request, env, user, parts[2]);
     }

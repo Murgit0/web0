@@ -201,6 +201,13 @@ CREATE TABLE IF NOT EXISTS reports (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+CREATE TABLE IF NOT EXISTS realtime_events (
+  id TEXT PRIMARY KEY,
+  channel TEXT NOT NULL,
+  payload TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token);
 CREATE INDEX IF NOT EXISTS idx_sites_slug ON sites(slug);
 CREATE INDEX IF NOT EXISTS idx_sites_owner ON sites(owner_id);
@@ -208,6 +215,7 @@ CREATE INDEX IF NOT EXISTS idx_farm_user ON farm_plots(user_id);
 CREATE INDEX IF NOT EXISTS idx_ledger_user ON wheat_ledger(user_id);
 CREATE INDEX IF NOT EXISTS idx_heist_attacker ON heist_log(attacker_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_game_scores ON game_scores(game, score);
+CREATE INDEX IF NOT EXISTS idx_realtime_channel ON realtime_events(channel, created_at);
 
 -- seed global farm plots 0-7
 INSERT OR IGNORE INTO global_farm (plot_index) VALUES (0),(1),(2),(3),(4),(5),(6),(7);

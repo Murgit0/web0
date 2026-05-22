@@ -10,9 +10,10 @@
 1. Upload `/cloudflare` modules (ES modules, `index.js` entry).
 2. **Bindings:**
    - `D1` → database `web0` (variable name must be `D1`)
-   - `MUG_HUB` → Durable Object, class name `MugHub`, script `web0-backend`
-3. **Durable Object migration:** add migration tag `v1` with class `MugHub` in Worker settings (or via CLI once).
 3. Optional var: `ADMIN_SECRET` for `POST /db/mug/spawn` (manual mug drops).
+
+   Realtime: D1 table `realtime_events` + `GET /db/poll` (no Durable Objects).
+
 4. Deploy. URL: `https://web0-backend.weeblye0.workers.dev`
 
 ## 3. GitHub Pages

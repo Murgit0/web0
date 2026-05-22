@@ -1,5 +1,5 @@
 import { api } from './api.js';
-import { onChannel } from './ws.js';
+import { onChannel } from './poll.js';
 import { getUser } from './api.js';
 
 let activeDrop = null;

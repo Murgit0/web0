@@ -1,7 +1,5 @@
 import { handleCors, json } from './cors.js';
 import { handleDb } from './router.js';
-import { MugHub } from './MugHub.js';
-export { MugHub };
 
 export default {
   async fetch(request, env, ctx) {
@@ -14,21 +12,12 @@ export default {
         ok: true,
         service: 'web0-backend',
         db: '/db/*',
-        ws: '/ws',
+        realtime: 'D1 poll via GET /db/poll',
       });
     }
 
     if (url.pathname.startsWith('/db')) {
       return handleDb(request, env, ctx);
-    }
-
-    if (url.pathname === '/ws') {
-      if (env.MUG_HUB) {
-        const id = env.MUG_HUB.idFromName('global');
-        const stub = env.MUG_HUB.get(id);
-        return stub.fetch(request);
-      }
-      return new Response('WebSocket requires MUG_HUB Durable Object binding', { status: 503 });
     }
 
     return json({ error: 'Not found' }, 404);

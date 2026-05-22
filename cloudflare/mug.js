@@ -1,6 +1,7 @@
 import { json } from './cors.js';
 import { withDb, uuid } from './db.js';
 import { requireUser } from './auth.js';
+import { pushEvent } from './poll.js';
 
 export async function getKitchenState(request, env) {
   return withDb(env, async (db) => {
@@ -76,10 +77,14 @@ export async function spawnMug(db, golden = false) {
     .run();
   if (Math.random() < 0.5) {
     await shatterMug(db, dropNumber, 'shattered on landing');
+    const shatter = { type: 'shatter', dropNumber };
+    await pushEvent(db, 'mug:drop', shatter);
     if (Math.random() < 0.5) return spawnMug(db, golden);
-    return { type: 'shatter', dropNumber };
+    return shatter;
   }
-  return { type: 'drop', dropId: id, dropNumber, golden };
+  const drop = { type: 'drop', dropId: id, dropNumber, golden };
+  await pushEvent(db, 'mug:drop', drop);
+  return drop;
 }
 
 export async function shatterMug(db, dropNumber, cause) {

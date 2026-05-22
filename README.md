@@ -9,7 +9,7 @@ Chaotic retro miniweb: **GitHub Pages** frontend, **Cloudflare Worker + D1** bac
 | Frontend | https://web0.murgit0.github.io/ |
 | API | https://web0-backend.weeblye0.workers.dev |
 | API data | `{API}/db/*` |
-| WebSocket | `wss://web0-backend.weeblye0.workers.dev/ws` |
+| Realtime poll | `GET {API}/db/poll?since=&channel=` (D1) |
 | Forum | https://web0.xo.je/forum/public/ |
 
 ## Repo layout
@@ -20,14 +20,14 @@ cloudflare/   Worker source (.js, env.D1)
 infra/        schema.sql, DEPLOY.md
 ```
 
-No `wrangler.toml` — bind D1 and Durable Objects in the Cloudflare dashboard. See [infra/DEPLOY.md](infra/DEPLOY.md).
+No `wrangler.toml` — bind **D1 only** in the Cloudflare dashboard. See [infra/DEPLOY.md](infra/DEPLOY.md).
 
 ## Features
 
 - Username/password auth (PBKDF2, sessions)
 - Site builder (GrapesJS) + public site renderer
 - Wheat economy: farm (per-user + global), casino, shop, real-user heists
-- Mug kitchen (pixel art), memorial, WebSocket drops
+- Mug kitchen (pixel art), memorial, D1-polled mug drops
 - Games: snake, minesweeper, pong/TTT wagers
 - Profiles, wall, MP3 songs on Pages (`/assets/music/`)
 - Flarum iframe at `/forum.html`
