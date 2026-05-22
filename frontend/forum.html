@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>forum — web0</title>
+  <link rel="stylesheet" href="/css/base.css" />
+  <style>.forum-frame { width: 100%; height: 80vh; border: 3px inset #000; }</style>
+</head>
+<body>
+  <div id="main-nav"></div>
+  <div class="box">
+    <h1>forum</h1>
+    <p><a id="open-tab" href="#" target="_blank">open in new tab</a></p>
+    <iframe class="forum-frame" id="forum-frame" title="Flarum"></iframe>
+  </div>
+  <script type="module">
+    import { injectNav } from '/js/nav.js';
+    import { FORUM_URL } from '/js/config.js';
+    injectNav();
+    document.getElementById('forum-frame').src = FORUM_URL;
+    document.getElementById('open-tab').href = FORUM_URL;
+  </script>
+</body>
+</html>

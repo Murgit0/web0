@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>login — web0</title>
+  <link rel="stylesheet" href="/css/base.css" />
+</head>
+<body>
+  <div id="main-nav"></div>
+  <div class="box">
+    <h1>login</h1>
+    <p>username + password</p>
+    <label>username <input id="user" /></label><br/><br/>
+    <label>password <input id="pass" type="password" /></label><br/><br/>
+    <button class="btn" id="go">login</button>
+    <p id="status"></p>
+  </div>
+  <script type="module">
+    import { injectNav } from '/js/nav.js';
+    import { login } from '/js/auth-ui.js';
+    injectNav();
+    document.getElementById('go').onclick = async () => {
+      try {
+        await login(document.getElementById('user').value, document.getElementById('pass').value);
+        location.href = '/dashboard.html';
+      } catch (e) { document.getElementById('status').textContent = e.message; }
+    };
+  </script>
+</body>
+</html>

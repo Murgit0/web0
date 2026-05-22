@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>mug memorial — web0</title>
+  <link rel="stylesheet" href="/css/base.css" />
+</head>
+<body>
+  <div id="main-nav"></div>
+  <div class="box">
+    <h1>memorial wall</h1>
+    <p>Every mug that shattered on landing.</p>
+    <table border="1" cellpadding="6" style="width:100%;border-collapse:collapse">
+      <thead><tr><th>#</th><th>cause</th><th>died</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+  <script type="module">
+    import { injectNav } from '/js/nav.js';
+    import { api } from '/js/api.js';
+    injectNav();
+    const { memorial } = await api('/mug/memorial');
+    const tb = document.getElementById('rows');
+    memorial.forEach((m) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${m.drop_number}</td><td>${m.cause}</td><td>${m.died_at}</td>`;
+      tb.appendChild(tr);
+    });
+  </script>
+</body>
+</html>

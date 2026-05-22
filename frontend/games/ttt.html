@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>tic-tac-toe</title>
+  <link rel="stylesheet" href="/css/base.css" />
+</head>
+<body>
+  <div class="box">
+    <p>1v1 with wheat wager — same match API as pong.</p>
+    <input id="stake" value="10" />
+    <button class="btn" id="create">create</button>
+    <input id="matchId" />
+    <button class="btn" id="join">join</button>
+    <p id="status"></p>
+    <a href="/games/">← games</a>
+  </div>
+  <script type="module">
+    import { api } from '/js/api.js';
+    import { requireAuthRedirect } from '/js/auth-ui.js';
+    if (!requireAuthRedirect()) throw 0;
+    document.getElementById('create').onclick = async () => {
+      const r = await api('/games/match', { method: 'POST', body: JSON.stringify({ game: 'ttt', stake: +document.getElementById('stake').value }) });
+      document.getElementById('matchId').value = r.match_id;
+      document.getElementById('status').textContent = r.match_id;
+    };
+    document.getElementById('join').onclick = async () => {
+      await api(`/games/match/${document.getElementById('matchId').value}/join`, { method: 'POST', body: '{}' });
+      document.getElementById('status').textContent = 'Joined';
+    };
+  </script>
+</body>
+</html>

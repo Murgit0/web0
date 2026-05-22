@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>minesweeper</title>
+  <link rel="stylesheet" href="/css/base.css" />
+</head>
+<body>
+  <div class="box">
+    <p>Click safe cells. Finish fast. Score = 100 - seconds (submit 60+)</p>
+    <div id="grid"></div>
+    <button class="btn" id="submit">submit</button>
+    <p id="status"></p>
+    <a href="/games/">← games</a>
+  </div>
+  <script type="module">
+    import { api } from '/js/api.js';
+    import { requireAuthRedirect } from '/js/auth-ui.js';
+    if (!requireAuthRedirect()) throw 0;
+    const start = Date.now();
+    const grid = document.getElementById('grid');
+    for (let i = 0; i < 25; i++) {
+      const b = document.createElement('button');
+      b.className = 'btn';
+      b.textContent = '?';
+      b.onclick = () => { b.textContent = Math.random() < 0.2 ? '💣' : '·'; b.disabled = true; };
+      grid.appendChild(b);
+    }
+    document.getElementById('submit').onclick = async () => {
+      const score = Math.max(0, 100 - Math.floor((Date.now() - start) / 1000));
+      try {
+        const r = await api('/games/score', { method: 'POST', body: JSON.stringify({ game: 'minesweeper', score }) });
+        document.getElementById('status').textContent = r.reward ? `+${r.reward} wheat! score ${score}` : `score ${score}`;
+      } catch (e) { document.getElementById('status').textContent = e.message; }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>dashboard — web0</title>
+  <link rel="stylesheet" href="/css/base.css" />
+</head>
+<body>
+  <div id="main-nav"></div>
+  <div class="box">
+    <h1>your sites</h1>
+    <p id="balance"></p>
+    <label>slug <input id="slug" placeholder="my-cool-site" /></label>
+    <label>title <input id="title" /></label>
+    <button class="btn" id="create">create site</button>
+    <ul id="sites"></ul>
+    <p id="status"></p>
+  </div>
+  <script type="module">
+    import { injectNav } from '/js/nav.js';
+    import { requireAuthRedirect } from '/js/auth-ui.js';
+    import { api } from '/js/api.js';
+    injectNav();
+    if (!requireAuthRedirect()) throw 0;
+    const bal = await api('/wheat/balance');
+    document.getElementById('balance').textContent = `🌾 ${bal.wheat} · crops ${bal.crops}`;
+    async function load() {
+      const { sites } = await api('/sites');
+      const ul = document.getElementById('sites');
+      ul.innerHTML = '';
+      sites.forEach((s) => {
+        const li = document.createElement('li');
+        li.innerHTML = `${s.title} (<a href="/site.html?slug=${s.slug}">view</a>) <a href="/builder.html?id=${s.id}">edit</a> <button data-id="${s.id}" class="del">delete</button>`;
+        ul.appendChild(li);
+      });
+      ul.querySelectorAll('.del').forEach((b) => b.onclick = async () => {
+        await api(`/sites/${b.dataset.id}`, { method: 'DELETE' });
+        load();
+      });
+    }
+    load();
+    document.getElementById('create').onclick = async () => {
+      try {
+        const { site } = await api('/sites', { method: 'POST', body: JSON.stringify({ slug: document.getElementById('slug').value, title: document.getElementById('title').value }) });
+        location.href = `/builder.html?id=${site.id}`;
+      } catch (e) { document.getElementById('status').textContent = e.message; }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>builder — web0</title>
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="https://unpkg.com/grapesjs/dist/css/grapes.min.css" />
+  <style>#gjs { border: 3px solid #000; min-height: 480px; }</style>
+</head>
+<body>
+  <div id="main-nav"></div>
+  <div class="box">
+    <h1>site builder</h1>
+    <button class="btn" id="save">save to API</button>
+    <button class="btn" id="back">dashboard</button>
+    <p id="status"></p>
+    <div id="gjs"></div>
+  </div>
+  <script src="https://unpkg.com/grapesjs"></script>
+  <script type="module">
+    import { injectNav } from '/js/nav.js';
+    import { requireAuthRedirect } from '/js/auth-ui.js';
+    import { api } from '/js/api.js';
+    injectNav();
+    if (!requireAuthRedirect()) throw 0;
+    const id = new URLSearchParams(location.search).get('id');
+    const { site } = await api(`/sites/${id}`);
+    const editor = grapesjs.init({
+      container: '#gjs',
+      height: '480px',
+      storageManager: false,
+      blockManager: { appendTo: '#gjs' },
+    });
+    editor.setComponents(site.html || '<div>Hello web0</div>');
+    editor.setStyle(site.css || '');
+    editor.BlockManager.add('text', { label: 'Text', content: '<p>text</p>' });
+    editor.BlockManager.add('image', { label: 'Image', content: '<img src="https://via.placeholder.com/150"/>' });
+    editor.BlockManager.add('gif', { label: 'GIF', content: '<img src="https://via.placeholder.com/100.gif"/>' });
+    editor.BlockManager.add('marquee', { label: 'Marquee', content: '<marquee>chaos</marquee>' });
+    editor.BlockManager.add('music', { label: 'Music', content: '<audio controls src="/assets/music/sample.mp3"></audio>' });
+    editor.BlockManager.add('html', { label: 'Raw HTML', content: '<div class="raw-html">custom</div>' });
+    document.getElementById('save').onclick = async () => {
+      try {
+        await api(`/sites/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify({ html: editor.getHtml(), css: editor.getCss(), js: '', blocks_meta: {} }),
+        });
+        document.getElementById('status').textContent = 'Saved!';
+      } catch (e) { document.getElementById('status').textContent = e.message; }
+    };
+    document.getElementById('back').onclick = () => location.href = '/dashboard.html';
+  </script>
+</body>
+</html>

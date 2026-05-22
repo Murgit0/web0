@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>register — web0</title>
+  <link rel="stylesheet" href="/css/base.css" />
+</head>
+<body>
+  <div id="main-nav"></div>
+  <div class="box">
+    <h1>register</h1>
+    <label>username <input id="user" /></label><br/><br/>
+    <label>password (8+) <input id="pass" type="password" /></label><br/><br/>
+    <label>display name <input id="disp" /></label><br/><br/>
+    <button class="btn" id="go">create account</button>
+    <p id="status"></p>
+  </div>
+  <script type="module">
+    import { injectNav } from '/js/nav.js';
+    import { register } from '/js/auth-ui.js';
+    injectNav();
+    document.getElementById('go').onclick = async () => {
+      try {
+        await register(document.getElementById('user').value, document.getElementById('pass').value, document.getElementById('disp').value);
+        location.href = '/dashboard.html';
+      } catch (e) { document.getElementById('status').textContent = e.message; }
+    };
+  </script>
+</body>
+</html>

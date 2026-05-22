@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>snake</title>
+  <link rel="stylesheet" href="/css/base.css" />
+</head>
+<body>
+  <div class="box">
+    <canvas id="c" width="320" height="320" style="border:2px solid #000"></canvas>
+    <p>Score: <span id="sc">0</span> — need 50+ for 15 wheat</p>
+    <button class="btn" id="submit">submit score</button>
+    <p id="status"></p>
+    <a href="/games/">← games</a>
+  </div>
+  <script type="module">
+    import { api } from '/js/api.js';
+    import { requireAuthRedirect } from '/js/auth-ui.js';
+    if (!requireAuthRedirect()) throw 0;
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+    let score = 0, x = 5, y = 5, dx = 1, dy = 0, food = { x: 10, y: 10 };
+    function tick() {
+      x += dx; y += dy;
+      if (x === food.x && y === food.y) { score++; food = { x: Math.floor(Math.random()*16), y: Math.floor(Math.random()*16) }; }
+      ctx.fillStyle = '#ccc'; ctx.fillRect(0,0,320,320);
+      ctx.fillStyle = '#0a0'; ctx.fillRect(x*20,y*20,18,18);
+      ctx.fillStyle = '#f00'; ctx.fillRect(food.x*20,food.y*20,18,18);
+      document.getElementById('sc').textContent = score;
+    }
+    setInterval(tick, 200);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp') { dx=0;dy=-1; }
+      if (e.key === 'ArrowDown') { dx=0;dy=1; }
+      if (e.key === 'ArrowLeft') { dx=-1;dy=0; }
+      if (e.key === 'ArrowRight') { dx=1;dy=0; }
+    });
+    document.getElementById('submit').onclick = async () => {
+      try {
+        const r = await api('/games/score', { method: 'POST', body: JSON.stringify({ game: 'snake', score }) });
+        document.getElementById('status').textContent = r.reward ? `+${r.reward} wheat!` : 'no reward';
+      } catch (e) { document.getElementById('status').textContent = e.message; }
+    };
+  </script>
+</body>
+</html>
