@@ -1,9 +1,10 @@
 # Cloudflare Worker scripts (`web0-backend`)
 
-**All code you deploy to the Worker lives in this folder.**  
-Entry point: **`index.js`** (default export).
+**All code you deploy to the Worker lives in this folder.**
 
-## Option A — Upload every file (ES modules)
+## Upload all `.js` files (recommended)
+
+Set **`index.js`** as the main module. Upload **every** file below into the same Worker (no subfolders needed).
 
 In the Cloudflare dashboard → Worker `web0-backend` → **Edit code** (or upload folder), include **all** of these:
 
